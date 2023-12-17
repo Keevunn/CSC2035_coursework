@@ -1,6 +1,6 @@
 /*
  * Replace the following string of 0s with your student number
- * 000000000
+ * 200868305
  */
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,14 +13,24 @@
  * - see job_new in job.c
  */
 pri_jobqueue_t* pri_jobqueue_new() {
-    return NULL;
+    pri_jobqueue_t* pjq;
+    pri_jobqueue_init(pjq);
+    return pjq;
 }
 
 /* 
  * TODO: you must implement this function.
  */
 void pri_jobqueue_init(pri_jobqueue_t* pjq) {
-    return;
+    if (pjq != NULL)
+    {
+        pjq->buf_size = JOB_BUFFER_SIZE;
+        pjq->size=0;
+        job_t* job;
+        job_init(job);
+        for (int i = 0; i < sizeof (pjq->jobs); i++)
+            pjq->jobs[i] = *job;
+    }
 }
 
 /* 
@@ -33,7 +43,21 @@ void pri_jobqueue_init(pri_jobqueue_t* pjq) {
  *      that was on the queue
  */
 job_t* pri_jobqueue_dequeue(pri_jobqueue_t* pjq, job_t* dst) {
-    return NULL;
+    if (pjq->size == 0 || pjq == NULL)
+        return NULL;
+    if (dst == NULL)
+        dst = malloc(sizeof(job_t));
+
+    job_t* current_job;
+    job_init(dst);
+
+    for (int i = 0; i < pjq->size; i++)
+    {
+        current_job = &pjq->jobs[i];
+        if (current_job->pid > dst->pid || dst->pid == 0)
+            *dst = *current_job;
+    }
+    return dst;
 }
 
 /* 
