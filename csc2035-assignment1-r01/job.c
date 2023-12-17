@@ -76,8 +76,12 @@ job_t* job_set(job_t* job, pid_t pid, unsigned int id, unsigned int priority,
 }
 
 char* job_to_str(job_t* job, char* str) {
-    if (str == NULL){ str = (char*) malloc(JOB_STR_SIZE); } 
+    if (str == NULL)
+        str = (char*) malloc(JOB_STR_SIZE + 1);
+    if (str == NULL)
+        return NULL;
 	snprintf(str, JOB_STR_SIZE, JOB_STR_FMT, (int) job->pid, job->id, job->priority, job->label);
+    strcat(str, "\0");
 	return str;
 }
 
