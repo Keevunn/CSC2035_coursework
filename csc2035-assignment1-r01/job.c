@@ -17,7 +17,7 @@ job_t* job_new(pid_t pid, unsigned int id, unsigned int priority,
 }
 
 job_t* job_copy(job_t* src, job_t* dst) {  
-	if (src == NULL)
+	if (src == NULL || strnlen(src->label, MAX_NAME_SIZE) != MAX_NAME_SIZE - 1)
 	{
         errno = ENOMEM;
 		return NULL;
@@ -78,7 +78,7 @@ job_t* job_set(job_t* job, pid_t pid, unsigned int id, unsigned int priority,
 char* job_to_str(job_t* job, char* str) {
     if (str == NULL)
         str = (char*) malloc(JOB_STR_SIZE + 1);
-    if (str == NULL)
+    if (str == NULL || job == NULL || strnlen(job->label, MAX_NAME_SIZE) != MAX_NAME_SIZE - 1)
         return NULL;
 	snprintf(str, JOB_STR_SIZE, JOB_STR_FMT, (int) job->pid, job->id, job->priority, job->label);
     strcat(str, "\0");
@@ -86,7 +86,10 @@ char* job_to_str(job_t* job, char* str) {
 }
 
 job_t* str_to_job(char* str, job_t* job) {
-    if (job == NULL) { job = (job_t*) malloc(sizeof(job_t)); }
+    if (job == NULL)
+        job = (job_t*) malloc(sizeof(job_t));
+    if (job == NULL)
+        return NULL;
 
 	if (str == NULL || strlen(str) != JOB_STR_SIZE - 1)
 	{
@@ -95,7 +98,7 @@ job_t* str_to_job(char* str, job_t* job) {
 
     if (sscanf(str, JOB_STR_FMT, &(job->pid), &(job->id), &(job->priority), &(job->label)) != 4)
     {
-        if (job != NULL) {free(job);}
+        if (job == NULL) {free(job);}
         return NULL;
     }
 
